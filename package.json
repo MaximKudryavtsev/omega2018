@@ -1,0 +1,36 @@
+{
+  "name": "package.json",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gruntfile.js",
+  "scripts": {
+    "built": "tsc --allowJs",
+    "start": "nodemon ./bin/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/body-parser": "^1.17.0",
+    "@types/bootstrap": "^4.1.1",
+    "@types/mysql": "^2.15.5",
+    "@types/restify": "^7.2.1",
+    "@types/restify-errors": "^4.3.3",
+    "@types/sequelize": "^4.27.23",
+    "@types/systemjs": "^0.20.6",
+    "body-parser": "^1.18.3",
+    "bootstrap": "^3.3.7",
+    "mysql": "^2.15.0",
+    "path": "^0.12.7",
+    "react": "^16.4.1",
+    "restify": "^7.2.1",
+    "restify-clients": "^2.2.0",
+    "restify-session": "^1.1.1",
+    "sequelize": "^4.38.0",
+    "systemjs": "^0.21.4",
+    "typescript": "^2.2.1"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.3.4",
+    "nodemon": "^1.11.0"
+  }
+}
