@@ -16,8 +16,9 @@ server.use(restify.plugins.bodyParser());
 
 connection.connect(err => {
     if(!err) {
-        var body = "<html><body><h1>successful connection to"+ database.getDBName() +"</h1></body></html>";
         console.log("successful connection to " + database.getDBName());
+    } else {
+        console.log(err);
     }
 });
 

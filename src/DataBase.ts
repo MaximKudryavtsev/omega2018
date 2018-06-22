@@ -1,4 +1,4 @@
-const HOST: string = "localhos11t";
+const HOST: string = "localhost";
 const USER: string = "root";
 const PASSWORD: string = "";
 const DATABASE: string = "omega";
