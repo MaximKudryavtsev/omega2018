@@ -5,7 +5,8 @@ import {DataBase} from "./DataBase";
 const port = 3000;
 
 let database = new DataBase();
-let connection = database.getConnection();
+//let connection = database.getConnection();
+let client = database.getClient();
 let server = restify.createServer({
     name: "start"
 });
@@ -14,12 +15,16 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 
-connection.connect(err => {
-    if(!err) {
-        console.log("successful connection to " + database.getDBName());
-    } else {
-        console.log(err);
-    }
+if(client.connect())
+{
+    console.log("successful connection to " + database.getDBName());
+}
+
+//client.query("INSERT INTO users(name, email, id_history) VALUES('Петя', 'vasya@mail.ru', 1)");
+
+client.query("select * from users", (err, res) => {
+    console.log(err ? err.stack : res.rows[0].email);
+    client.end()
 });
 
 server.get('/',(req, res) => {

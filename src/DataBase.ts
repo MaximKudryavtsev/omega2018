@@ -1,21 +1,20 @@
-const HOST: string = "localhost";
-const USER: string = "root";
-const PASSWORD: string = "";
-const DATABASE: string = "omega";
+import * as pg from 'pg';
+import {DBConfig} from "./DBConfig"
+const conString = "postgres://"+DBConfig.user+":"+DBConfig.password+"@"+DBConfig.host+":"+DBConfig.port+"/"+DBConfig.database+"";
 
-import * as mysql from 'mysql';
 class DataBase
 {
-    private _dbName:string = DATABASE;
+    private _dbName:string = DBConfig.database;
 
     public getConnection()
     {
-        return mysql.createConnection({
-            host: HOST,
-            user: USER,
-            password: PASSWORD,
-            database: DATABASE
-        })
+        let client = new pg.Client(conString);
+        return client.connect();
+    }
+
+    public getClient()
+    {
+        return new pg.Client(conString);
     }
 
 
