@@ -1,42 +1,77 @@
 import {DataBase} from "../DataBase";
+import * as sq from 'sequelize';
 let database = new DataBase();
-let client = database.getClient();
-client.connect();
+let sequelize = database.getSequelize();
+sequelize.authenticate();
+const user = sequelize.define('users', {
+    id_user: {
+        type: sq.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    name: {type: sq.STRING},
+    email: {type: sq.STRING},
+    id_history: {
+        type: sq.INTEGER
+    },
+}, {tableName: "users", timestamps: false});
 class User
 {
     public CreateUser(name: string, email: string)
     {
-        client.query("INSERT INTO users(name, email) VALUES($1, $2)", [name, email]);
-        console.log("Created user: " + name + "-" + email);
+        user.create({name: name, email: email}).then(() => console.log("Created user: " + name + " with email: " + email));
     }
 
     public GetUserByName(name: string)
     {
-        client.query("SELECT * FROM users WHERE name = $1",[name], (err, res) =>{
-            console.log(res.rows[0].id_user + " | " + res.rows[0].name.replace(/\s/g, '') + " | " + res.rows[0].email + " | " + res.rows[0].id_history);
+        user.findOne({
+            where: {
+                name: name
+            }
+        }).then(result => {
+            let email = JSON.parse(JSON.stringify(result))["email"];
+            console.log("Email: " + email);
         });
+
+
     }
 
     public GetAllUsers()
     {
-        client.query("select * from users", (err, res) => {
-            for(let i = 0; i < res.rows.length; i++)
+        user.findAll({}).then(result => {
+            for(let i = 0; i < result.length; i++)
             {
-                console.log(res.rows[i].id_user + " | " + res.rows[i].name.replace(/\s/g, '') + " | " + res.rows[i].email + " | " + res.rows[i].id_history);
+                let id_user = JSON.parse(JSON.stringify(result))[i]["id_user"];
+                let name: string = JSON.parse(JSON.stringify(result))[i]["name"];
+                let email = JSON.parse(JSON.stringify(result))[i]["email"];
+                let id_history = JSON.parse(JSON.stringify(result))[i]["id_history"];
+                console.log(id_user + " | " + name + " | " + email + " | " + id_history);
+            }
+        })
+    }
+
+    public EditUser(id:number, name: string, email: string)
+    {
+        user.update({
+            name: name,
+            email: email,
+        }, {
+                where: {
+                    id_user: id
+                }
+            }
+        );
+        console.log("Updated!");
+    }
+
+    public DeleteUser(id: number)
+    {
+        user.destroy({
+            where: {
+                id_user: id
             }
         });
-    }
-
-    public EditUser(id:number ,name: string, email: string)
-    {
-        client.query("UPDATE users SET name = $1, email = $2 WHERE id_user = $3",[name, email, id]);
-        console.log("Updated!");
-    }
-
-    public DeleteUser(name: string)
-    {
-        client.query("DELETE FROM users WHERE name = $1",[name]);
-        console.log("Updated!");
+        console.log("Deleted!");
     }
 }
 

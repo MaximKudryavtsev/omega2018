@@ -24,9 +24,9 @@ class UserController
         return user.EditUser(id, name, email);
     }
 
-    public DeleteUser(name: string)
+    public DeleteUser(id: number)
     {
-        return user.DeleteUser(name);
+        return user.DeleteUser(id);
     }
 
 }

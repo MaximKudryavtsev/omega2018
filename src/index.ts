@@ -4,13 +4,12 @@ import * as bodyParser from 'body-parser';
 import * as readline from 'readline';
 import {DataBase} from "./DataBase";
 import {UserController} from "./controller/UserController";
-
+import {StatusCodesConfig} from "./StatusCodesConfig";
 
 const port = 3000;
 
 let database = new DataBase();
-//let connection = database.getConnection();
-let client = database.getClient();
+let client = database.getSequelize();
 let server = restify.createServer({
     name: "start"
 });
@@ -21,13 +20,16 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 
-if(client.connect())
-{
-    console.log("successful connection to " + database.getDBName());
-}
+client.authenticate()
+    .then(() => {
+        console.log('Connection has been established successfully.');
+    })
+    .catch(err => {
+        console.error('Unable to connect to the database:', err);
+    });
 
 server.get('/get-users', (req, res, next) => {
-    res.send(200, controller.GetAllUsers());
+    res.send(StatusCodesConfig.OK, controller.GetAllUsers());
     return next();
 });
 
@@ -37,7 +39,7 @@ server.get('/search-user/:name', (req, res, next) => {
     }
     try {
         const user = controller.GetUserByName(req.params.name);
-        res.send(200, user);
+        res.send(StatusCodesConfig.OK, user);
         return next();
     } catch (error) {
         return next(new errors.NotFoundError(error));
@@ -49,30 +51,30 @@ server.post('/create-user', (req, res, next) => {
         return next(new errors.BadRequestError());
     }
     controller.CreateUser(req.body.name, req.body.email);
-    res.send(201);
+    res.send(StatusCodesConfig.CREATED);
     return next();
 });
 
-server.put('/edit-user/:name', (req, res, next) => {
-    if (!req.params.name || !req.body || !req.body.name) {
+server.put('/edit-user/:id_user', (req, res, next) => {
+    if (!req.params.id_user || !req.body || !req.body.name) {
         return next(new errors.BadRequestError());
     }
     try {
-        const user = controller.EditUser(req.body.id_user, req.params.name, req.body.email);
-        res.send(200, user);
+        const user = controller.EditUser(req.params.id_user, req.body.name, req.body.email);
+        res.send(StatusCodesConfig.OK, user);
         return next();
     } catch (error) {
         return next(new errors.NotFoundError(error));
     }
 });
 
-server.del('/delete-user/:name', (req, res, next) => {
-    if (!req.params.name) {
+server.del('/delete-user/:id_user', (req, res, next) => {
+    if (!req.params.id_user) {
         return next(new errors.BadRequestError());
     }
     try {
-        controller.DeleteUser(req.params.name);
-        res.send(204);
+        controller.DeleteUser(req.params.id_user);
+        res.send(StatusCodesConfig.NO_CONTENT);
         return next();
     } catch (error) {
         return next(new errors.NotFoundError(error));
