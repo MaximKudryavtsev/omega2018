@@ -31,8 +31,6 @@ class User
             where: {
                 name: name
             }
-        }).then(result => {
-            return JSON.parse(JSON.stringify(result))["email"];
         });
     }
 
