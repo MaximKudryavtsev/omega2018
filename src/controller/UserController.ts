@@ -9,9 +9,9 @@ class UserController
         return user.GetAllUsers();
     }
 
-    public GetUserByName(name: string)
+    public GetEmailByName(name: string)
     {
-        return user.GetUserByName(name);
+        return user.GetEmailByName(name);
     }
 
     public CreateUser(name: string, email: string)
@@ -29,6 +29,10 @@ class UserController
         return user.DeleteUser(id);
     }
 
+    public GetEmail()
+    {
+        return user.GetEmail();
+    }
 }
 
 export {UserController}

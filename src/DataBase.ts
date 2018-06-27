@@ -1,6 +1,6 @@
 import * as pg from 'pg';
 import * as sq from 'sequelize';
-import {DBConfig} from "./DBConfig"
+import {DBConfig} from "./config/DBConfig"
 const conString = "postgres://"+DBConfig.user+":"+DBConfig.password+"@"+DBConfig.host+":"+DBConfig.port+"/"+DBConfig.database+"";
 
 class DataBase

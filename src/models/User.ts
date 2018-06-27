@@ -11,29 +11,29 @@ const user = sequelize.define('users', {
     },
     name: {type: sq.STRING},
     email: {type: sq.STRING},
-    id_history: {
+    id_user_history: {
         type: sq.INTEGER
     },
 }, {tableName: "users", timestamps: false});
 class User
 {
+    private _email:string;
+
     public CreateUser(name: string, email: string)
     {
         user.create({name: name, email: email}).then(() => console.log("Created user: " + name + " with email: " + email));
     }
 
-    public GetUserByName(name: string)
+
+    public GetEmailByName(name: string)
     {
-        user.findOne({
+        return user.findOne({
             where: {
                 name: name
             }
         }).then(result => {
-            let email = JSON.parse(JSON.stringify(result))["email"];
-            console.log("Email: " + email);
+            return JSON.parse(JSON.stringify(result))["email"];
         });
-
-
     }
 
     public GetAllUsers()
@@ -44,7 +44,7 @@ class User
                 let id_user = JSON.parse(JSON.stringify(result))[i]["id_user"];
                 let name: string = JSON.parse(JSON.stringify(result))[i]["name"];
                 let email = JSON.parse(JSON.stringify(result))[i]["email"];
-                let id_history = JSON.parse(JSON.stringify(result))[i]["id_history"];
+                let id_history = JSON.parse(JSON.stringify(result))[i]["id_user_history"];
                 console.log(id_user + " | " + name + " | " + email + " | " + id_history);
             }
         })
@@ -73,6 +73,13 @@ class User
         });
         console.log("Deleted!");
     }
+
+    public GetEmail()
+    {
+        return this._email;
+    }
+
+
 }
 
 export {User}

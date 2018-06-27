@@ -4,7 +4,9 @@ import * as bodyParser from 'body-parser';
 import * as readline from 'readline';
 import {DataBase} from "./DataBase";
 import {UserController} from "./controller/UserController";
-import {StatusCodesConfig} from "./StatusCodesConfig";
+import {StatusCodesConfig} from "./config/StatusCodesConfig";
+import {CsvParser} from "./controller/CsvParser";
+import {CsvData} from "./models/CsvData";
 
 const port = 3000;
 
@@ -15,6 +17,7 @@ let server = restify.createServer({
 });
 
 const controller = new UserController();
+const parser = new CsvParser();
 
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser());
@@ -38,12 +41,31 @@ server.get('/search-user/:name', (req, res, next) => {
         return next(new errors.BadRequestError());
     }
     try {
-        const user = controller.GetUserByName(req.params.name);
+        const user = controller.GetEmailByName(req.params.name);
         res.send(StatusCodesConfig.OK, user);
         return next();
     } catch (error) {
         return next(new errors.NotFoundError(error));
     }
+});
+
+server.post('/send', (req, res, next) => {
+    if (!req.body) {
+        return next(new errors.BadRequestError());
+    }
+    let dataString:string = "1,Старыгин Константин Александрович,1 234\n" +
+        "2,Цепелева Татьяна Александровна,1 235\n" +
+        "3,Кузин Никита Олегович,1 236\n" +
+        "4,Ведушев Алексей Анатольевич,1 237\n" +
+        "5,Тимакова Елена Сергеевна,1 238\n" +
+        "6,Егошин Роман Николаевич,1 239";
+    let data:CsvData[] = parser.Parse(dataString);
+    for(let i = 0; i < data.length; i++)
+    {
+        console.log(data[i]);
+    }
+    res.send(StatusCodesConfig.CREATED);
+    return next();
 });
 
 server.post('/create-user', (req, res, next) => {
