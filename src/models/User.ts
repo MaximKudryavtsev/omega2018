@@ -72,6 +72,15 @@ class User
         console.log("Deleted!");
     }
 
+    public GetUserByIdHistory(id:number)
+    {
+        return user.findOne({
+            where: {
+                id_user_history: id
+            }
+        })
+    }
+
     public GetEmail()
     {
         return this._email;

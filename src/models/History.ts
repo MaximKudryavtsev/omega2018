@@ -1,8 +1,15 @@
 import {DataBase} from "../DataBase";
 import * as sq from 'sequelize';
-let database = new DataBase();
-let sequelize = database.getSequelize();
+import {UserController} from "../controller/UserController";
+
+const database = new DataBase();
+const sequelize = database.getSequelize();
 sequelize.authenticate();
+
+
+
+const userController = new UserController();
+
 const history = sequelize.define('history', {
     id_history: {
         type: sq.INTEGER,
@@ -14,15 +21,19 @@ const history = sequelize.define('history', {
         type: sq.INTEGER,
         allowNull: false
     },
-    date: {
-        type: sq.DATE,
-        defaultValue: sq.fn('NOW')
-    },
     salary: {
         type: sq.DECIMAL,
         allowNull: false
+    },
+    createdAt: {
+        type: sq.DATE(3),
+        defaultValue: new Date()
+    },
+    updatedAt: {
+        type: sq.DATE(3),
+        defaultValue: new Date()
     }
-}, {tableName: "history", timestamps: false});
+}, {tableName: "history", timestamps: true});
 class History
 {
     public AddHistory(id_history: number, salary: string)
@@ -37,14 +48,25 @@ class History
                 id_user_history: id_history
             }
         }).then(result => {
-            for(let i = 0; i < result.length; i++)
+            if(result.length == 0)
             {
-                let id_history = JSON.parse(JSON.stringify(result))[i]["id_history"];
-                let id_user_history = JSON.parse(JSON.stringify(result))[i]["id_user_history"];
-                let date = JSON.parse(JSON.stringify(result))[i]["date"];
-                let salary = JSON.parse(JSON.stringify(result))[i]["salary"];
-                console.log(id_history + "|" + id_user_history + "|" + date + "|" + salary);
+                console.log('not found')
             }
+            else
+            {
+                for(let i = 0; i < result.length; i++)
+                {
+                    let id_user_history = JSON.parse(JSON.stringify(result))[i]["id_user_history"];
+                    let date = JSON.parse(JSON.stringify(result))[i]["createdAt"];
+                    let salary = JSON.parse(JSON.stringify(result))[i]["salary"];
+                    userController.GetUserByIdHistory(id_user_history).then(result => {
+                        const name = JSON.parse(JSON.stringify(result))["name"];
+                        console.log(i + 1 + " | " + name + " | " + date + " | " + salary);
+                    });
+
+                }
+            }
+
 
 
         });

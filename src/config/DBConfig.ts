@@ -1,7 +1,7 @@
 let DBConfig = {
     host: "localhost",
-    user: "postgres",
-    password: "qwerty",
+    user: "maksim",
+    password: "krestonosets",
     database: "omega",
     port: 5432
 };

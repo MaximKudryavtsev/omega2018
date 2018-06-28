@@ -33,6 +33,11 @@ class UserController
     {
         return user.GetEmail();
     }
+
+    public GetUserByIdHistory(id:number)
+    {
+        return user.GetUserByIdHistory(id);
+    }
 }
 
 export {UserController}
