@@ -2,10 +2,10 @@ import * as restify from 'restify';
 import * as errors from 'restify-errors';
 import * as bodyParser from 'body-parser';
 import * as readline from 'readline';
+
 import {DataBase} from "./DataBase";
 import {UserController} from "./controller/UserController";
 import {HistoryController} from "./controller/HistoryController";
-import {AuthController} from "./controller/AuthController";
 import {StatusCodesConfig} from "./config/StatusCodesConfig";
 import {CsvParser} from "./controller/CsvParser";
 import {CsvData} from "./models/CsvData";
@@ -21,15 +21,17 @@ let server = restify.createServer({
     name: "start"
 });
 
+
 const userController = new UserController();
 const historyController = new HistoryController();
-const authController = new AuthController();
 
 const parser = new CsvParser();
 
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
+
+
 
 client.authenticate()
     .then(() => {
@@ -40,34 +42,13 @@ client.authenticate()
     });
 
 
-server.post('/login', (req, res, next) => {
-    if (!req.body || !req.body.login || !req.body.password) {
-        return next(new errors.BadRequestError());
-    };
 
-    let auth = authController.Login(req.body.login, req.body.password).then(result => {
-
-        if(result == null)
-        {
-            console.log("Login please");
-        }
-        else
-        {
-            console.log("Welcome, " + JSON.parse(JSON.stringify(result))["login"]);
-        }
-    });
-    res.send(StatusCodesConfig.CREATED);
-    return next();
-});
-
-
-
-server.get('/get-users', (req, res, next) => {
+server.get('/get/users', (req, res, next) => {
     res.send(StatusCodesConfig.OK, userController.GetAllUsers());
     return next();
 });
 
-server.get('/search-user/:name', (req, res, next) => {
+server.get('/get/user/:name', (req, res, next) => {
     if (!req.params.name) {
         return next(new errors.BadRequestError());
     }
@@ -80,7 +61,7 @@ server.get('/search-user/:name', (req, res, next) => {
     }
 });
 
-server.get('/get-history/:id', (req, res, next) => {
+server.get('/get/history/:id', (req, res, next) => {
     if (!req.params.id) {
         return next(new errors.BadRequestError());
     }
@@ -93,7 +74,7 @@ server.get('/get-history/:id', (req, res, next) => {
     }
 });
 
-server.post('/send-csv', (req, res, next) => {
+server.post('/post/csv', (req, res, next) => {
     if (!req.body || !req.body.string) {
         return next(new errors.BadRequestError());
     }
@@ -106,10 +87,9 @@ server.post('/send-csv', (req, res, next) => {
         let salary = data[i].getSalary();
         userController.GetEmailByName(name).then(result => {
             const email = JSON.parse(JSON.stringify(result))["email"];
-            const id:number = parseInt(JSON.parse(JSON.stringify(result))["id_user_history"]);
+            const id:number = parseInt(JSON.parse(JSON.stringify(result))["id_user"]);
             const mailData = name + ", вам зачислено " + salary;
-            sender.Send(email, mailData);
-            historyController.AddHistory(id, salary);
+            sender.Send(email, mailData, id, salary);
         });
     }
 
@@ -117,7 +97,7 @@ server.post('/send-csv', (req, res, next) => {
     return next();
 });
 
-server.post('/create-user', (req, res, next) => {
+server.post('/post/user', (req, res, next) => {
     if (!req.body || !req.body.name || !req.body.email) {
         return next(new errors.BadRequestError());
     }
@@ -127,7 +107,7 @@ server.post('/create-user', (req, res, next) => {
     return next();
 });
 
-server.put('/edit-user/:id_user', (req, res, next) => {
+server.put('/update/user/:id_user', (req, res, next) => {
     if (!req.params.id_user || !req.body || !req.body.name) {
         return next(new errors.BadRequestError());
     }
@@ -140,7 +120,7 @@ server.put('/edit-user/:id_user', (req, res, next) => {
     }
 });
 
-server.del('/delete-user/:id_user', (req, res, next) => {
+server.del('/delete/user/:id_user', (req, res, next) => {
     if (!req.params.id_user) {
         return next(new errors.BadRequestError());
     }
@@ -152,12 +132,6 @@ server.del('/delete-user/:id_user', (req, res, next) => {
         return next(new errors.NotFoundError(error));
     }
 });
-
-server.post('/logout', (req, res, next) => {
-    res.send(StatusCodesConfig.CREATED);
-    return next();
-});
-
 
 server.listen(port, ()=>{
     console.info('server started on ' + port + ' port');

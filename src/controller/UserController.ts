@@ -34,9 +34,9 @@ class UserController
         return user.GetEmail();
     }
 
-    public GetUserByIdHistory(id:number)
+    public GetUserByIdUser(id:number)
     {
-        return user.GetUserByIdHistory(id);
+        return user.GetUserByIdUser(id);
     }
 }
 

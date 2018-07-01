@@ -2,12 +2,15 @@ import {CsvData} from "./CsvData"
 import {User} from "./User"
 import * as nodemailer from "nodemailer"
 import {EmailConfig} from "../config/EmailConfig"
+import {HistoryController} from "../controller/HistoryController";
 
 const user = new User();
+const historyController = new HistoryController();
+
 
 class Sender
 {
-    public Send(email: string, mailData:string)
+    public Send(email: string, mailData:string, id:number, salary: string)
     {
 
         let transporter = nodemailer.createTransport({
@@ -31,9 +34,14 @@ class Sender
 
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
-                return console.log(error);
+                console.log(error);
+                historyController.AddHistory(id, salary, "not-sended: " + JSON.stringify(error) + "");
             }
-            console.log('Message sent: %s', info.messageId);
+            else
+            {
+                historyController.AddHistory(id, salary, "sended");
+            }
+            console.log('Message sent: %s', info.response);
         });
     }
 }

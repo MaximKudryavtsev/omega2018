@@ -17,7 +17,7 @@ const history = sequelize.define('history', {
         autoIncrement: true,
         allowNull: false
     },
-    id_user_history: {
+    id_user: {
         type: sq.INTEGER,
         allowNull: false
     },
@@ -32,20 +32,23 @@ const history = sequelize.define('history', {
     updatedAt: {
         type: sq.DATE(3),
         defaultValue: new Date()
+    },
+    state: {
+        type: sq.STRING
     }
 }, {tableName: "history", timestamps: true});
 class History
 {
-    public AddHistory(id_history: number, salary: string)
+    public AddHistory(id_user: number, salary: string, state: string)
     {
-        history.create({id_user_history: id_history, salary: salary});
+        history.create({id_user: id_user, salary: salary, state: state});
     }
 
-    public GetUserHistory(id_history: number)
+    public GetUserHistory(id_user: number)
     {
         return history.findAll({
             where:  {
-                id_user_history: id_history
+                id_user: id_user
             }
         }).then(result => {
             if(result.length == 0)
@@ -56,12 +59,13 @@ class History
             {
                 for(let i = 0; i < result.length; i++)
                 {
-                    let id_user_history = JSON.parse(JSON.stringify(result))[i]["id_user_history"];
+                    let id_user = JSON.parse(JSON.stringify(result))[i]["id_user"];
                     let date = JSON.parse(JSON.stringify(result))[i]["createdAt"];
                     let salary = JSON.parse(JSON.stringify(result))[i]["salary"];
-                    userController.GetUserByIdHistory(id_user_history).then(result => {
+                    let state = JSON.parse(JSON.stringify(result))[i]["state"];
+                    userController.GetUserByIdUser(id_user).then(result => {
                         const name = JSON.parse(JSON.stringify(result))["name"];
-                        console.log(i + 1 + " | " + name + " | " + date + " | " + salary);
+                        console.log(i + 1 + " | " + name + " | " + date + " | " + salary + " | " + state);
                     });
 
                 }

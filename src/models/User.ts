@@ -11,9 +11,6 @@ const user = sequelize.define('users', {
     },
     name: {type: sq.STRING},
     email: {type: sq.STRING},
-    id_user_history: {
-        type: sq.INTEGER
-    },
 }, {tableName: "users", timestamps: false});
 class User
 {
@@ -42,8 +39,7 @@ class User
                 let id_user = JSON.parse(JSON.stringify(result))[i]["id_user"];
                 let name: string = JSON.parse(JSON.stringify(result))[i]["name"];
                 let email = JSON.parse(JSON.stringify(result))[i]["email"];
-                let id_history = JSON.parse(JSON.stringify(result))[i]["id_user_history"];
-                console.log(id_user + " | " + name + " | " + email + " | " + id_history);
+                console.log(id_user + " | " + name + " | " + email + " | ");
             }
         })
     }
@@ -72,11 +68,11 @@ class User
         console.log("Deleted!");
     }
 
-    public GetUserByIdHistory(id:number)
+    public GetUserByIdUser(id:number)
     {
         return user.findOne({
             where: {
-                id_user_history: id
+                id_user: id
             }
         })
     }
