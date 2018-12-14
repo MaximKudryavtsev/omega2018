@@ -4,8 +4,8 @@ let EmailConfig = {
     port: 465,
     secure: true,
     auth: {
-        user: 'practiceimega@gmail.com',
-        pass: 'practiseomega'
+        user: '',
+        pass: ''
     }
 };
 
